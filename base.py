@@ -12,7 +12,7 @@ class Record:
                  stop_time,
                  end_node_str,
                  end_node_id):
-        self.access_id = access_id
+        self.access_id = int(access_id)
         self.start_node_str = start_node_str
         self.start_node_id = start_node_id
         self.end_node_str = end_node_str
@@ -32,8 +32,8 @@ class Record:
 
 
 class Ruta:
-    def __init__(self):
-        self.records = []
+    def __init__(self, records=[]):
+        self.records = records
 
     def append(self, ruta):
         self.records.append(ruta)
@@ -63,6 +63,14 @@ class Ruta:
         ## Esto es para el último salto que no está incluido dentro del loop
         return self.valida_que_nodo_sigue_en_ruta(index, nodos_actuales, nodo)
 
+def esta_ya_en_la_lista(lista, nodo):
+    def compara(registro):
+        une_estos_satelites = [registro.start_node_str, registro.end_node_str]
+        if registro.start_time == nodo.start_time and registro.stop_time and nodo.start_node_str in une_estos_satelites and nodo.end_node_str in une_estos_satelites:
+            return True
+        return False
+    filtrado = list(filter(compara, lista))
+    return bool(filtrado)
 
 
 class ManagerDeRutas:
@@ -71,7 +79,7 @@ class ManagerDeRutas:
 
     def leer_registros(self):
         records = []
-        with open('access.csv') as access:
+        with open('access_chico.csv') as access:
             reader = csv.DictReader(access, delimiter=',')
             for row in reader:
                 access_id = row['access']
@@ -88,7 +96,9 @@ class ManagerDeRutas:
                            stop_time,
                            end_node_str,
                            end_node_id)
-                records.append(r)
+                if not esta_ya_en_la_lista(records, r):
+                    records.append(r)
+
         self.records = records
         return self.records
 
