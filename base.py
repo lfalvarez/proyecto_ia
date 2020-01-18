@@ -97,7 +97,6 @@ class ManagerDeRutas:
         for indice in indices_en_el_excel:
             indice = int(indice)
             registros.append(self.records[indice])
-
         ruta_resultante = Ruta()
         ruta_resultante.records = registros
         return ruta_resultante
